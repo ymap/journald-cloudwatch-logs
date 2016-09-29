@@ -25,6 +25,10 @@ var PriorityJSON = map[Priority][]byte{
 }
 
 type Record struct {
+	Hostname    string       `json:"hostname,omitempty" journald:"_HOSTNAME"`
+	SystemdUnit string       `json:"systemdUnit,omitempty" journald:"_SYSTEMD_UNIT"`
+	Priority    Priority     `json:"priority" journald:"PRIORITY"`
+	Message     string       `json:"message" journald:"MESSAGE"`
 	InstanceId  string       `json:"instanceId,omitempty"`
 	TimeUsec    int64        `json:"-"`
 	PID         int          `json:"pid" journald:"_PID"`
@@ -33,13 +37,9 @@ type Record struct {
 	Command     string       `json:"cmdName,omitempty" journald:"_COMM"`
 	Executable  string       `json:"exe,omitempty" journald:"_EXE"`
 	CommandLine string       `json:"cmdLine,omitempty" journald:"_CMDLINE"`
-	SystemdUnit string       `json:"systemdUnit,omitempty" journald:"_SYSTEMD_UNIT"`
 	BootId      string       `json:"bootId,omitempty" journald:"_BOOT_ID"`
 	MachineId   string       `json:"machineId,omitempty" journald:"_MACHINE_ID"`
-	Hostname    string       `json:"hostname,omitempty" journald:"_HOSTNAME"`
 	Transport   string       `json:"transport,omitempty" journald:"_TRANSPORT"`
-	Priority    Priority     `json:"priority" journald:"PRIORITY"`
-	Message     string       `json:"message" journald:"MESSAGE"`
 	MessageId   string       `json:"messageId,omitempty" journald:"MESSAGE_ID"`
 	Errno       int          `json:"machineId,omitempty" journald:"ERRNO"`
 	Syslog      RecordSyslog `json:"syslog,omitempty"`
