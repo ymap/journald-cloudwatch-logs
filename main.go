@@ -10,6 +10,7 @@ import (
 )
 
 var help = flag.Bool("help", false, "set to true to show this help")
+var logStreamName = flag.String("S", "", "AWS log stream name")
 
 func main() {
 	flag.Parse()
@@ -40,7 +41,7 @@ func usage() {
 }
 
 func run(configFilename string) error {
-	config, err := LoadConfig(configFilename)
+	config, err := LoadConfig(configFilename, *logStreamName)
 	if err != nil {
 		return fmt.Errorf("error reading config: %s", err)
 	}
