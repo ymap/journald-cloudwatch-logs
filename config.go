@@ -58,7 +58,7 @@ func getLogLevel(priority string) (Priority, error) {
 	return DEBUG, fmt.Errorf("'%s' is unsupported log priority", priority)
 }
 
-func LoadConfig(filename string) (*Config, error) {
+func LoadConfig(filename, logStreamName string) (*Config, error) {
 	configBytes, err := ioutil.ReadFile(filename)
 	if err != nil {
 		return nil, err
@@ -113,7 +113,9 @@ func LoadConfig(filename string) (*Config, error) {
 
 	config.LogGroupName = fConfig.LogGroupName
 
-	if fConfig.LogStreamName != "" {
+	if logStreamName != "" {
+		config.LogStreamName = logStreamName
+	} else if fConfig.LogStreamName != "" {
 		config.LogStreamName = fConfig.LogStreamName
 	} else {
 		// By default we use the instance id as the stream name.
