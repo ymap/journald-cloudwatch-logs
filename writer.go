@@ -86,6 +86,8 @@ func (w *Writer) WriteBatch(records []Record) (string, error) {
 				if err != nil {
 					return "", err
 				}
+			} else {
+				return "", err
 			}
 		} else {
 			return "", err
