@@ -66,7 +66,12 @@ func run(configFilename string) error {
 		return fmt.Errorf("Failed to open %s: %s", config.StateFilename, err)
 	}
 
-	lastBootId, nextSeq := state.LastState()
+	streamName, lastBootId, nextSeq := state.LastState()
+	if streamName != "" && streamName != config.LogStreamName {
+		log.Printf("LogStreamName changed from %s to %s; resetting state.", streamName, config.LogStreamName)
+		lastBootId = ""
+		nextSeq = ""
+	}
 
 	awsSession := config.NewAWSSession()
 
@@ -106,7 +111,7 @@ func run(configFilename string) error {
 		skip = 1
 	}
 
-	err = state.SetState(bootId, nextSeq)
+	err = state.SetState(config.LogStreamName, bootId, nextSeq)
 	if err != nil {
 		return fmt.Errorf("Failed to write state: %s", err)
 	}
@@ -126,7 +131,7 @@ func run(configFilename string) error {
 			return fmt.Errorf("Failed to write to cloudwatch: %s", err)
 		}
 
-		err = state.SetState(bootId, nextSeq)
+		err = state.SetState(config.LogStreamName, bootId, nextSeq)
 		if err != nil {
 			return fmt.Errorf("Failed to write state: %s", err)
 		}
@@ -135,7 +140,7 @@ func run(configFilename string) error {
 
 	// We fall out here when interrupted by a signal.
 	// Last chance to write the state.
-	err = state.SetState(bootId, nextSeq)
+	err = state.SetState(config.LogStreamName, bootId, nextSeq)
 	if err != nil {
 		return fmt.Errorf("Failed to write state on exit: %s", err)
 	}

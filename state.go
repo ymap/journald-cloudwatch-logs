@@ -5,7 +5,7 @@ import (
 	"os"
 )
 
-const stateFormat = "%s\n%s\n"
+const stateFormat = "%s\n%s\n%s\n"
 const mapSize = 64
 
 type State struct {
@@ -14,7 +14,7 @@ type State struct {
 
 func OpenState(fn string) (State, error) {
 	s := State{}
-	f, err := os.OpenFile(fn, os.O_RDWR|os.O_CREATE, 0700)
+	f, err := os.OpenFile(fn, os.O_RDWR|os.O_CREATE, 0600)
 	if err != nil {
 		return s, err
 	}
@@ -30,26 +30,27 @@ func (s State) Sync() error {
 	return s.file.Sync()
 }
 
-func (s State) LastState() (string, string) {
+func (s State) LastState() (string, string, string) {
+	var streamName string
 	var bootId string
 	var seqToken string
 	_, err := s.file.Seek(0, 0)
 	if err != nil {
-		return "", ""
+		return "", "", ""
 	}
-	n, err := fmt.Fscanf(s.file, stateFormat, &bootId, &seqToken)
+	n, err := fmt.Fscanf(s.file, stateFormat, &streamName, &bootId, &seqToken)
 	if err != nil || n < 2 {
-		return "", ""
+		return "", "", ""
 	}
-	return bootId, seqToken
+	return streamName, bootId, seqToken
 }
 
-func (s State) SetState(bootId, seqToken string) error {
+func (s State) SetState(streamName, bootId, seqToken string) error {
 	_, err := s.file.Seek(0, 0)
 	if err != nil {
 		return err
 	}
-	_, err = fmt.Fprintf(s.file, stateFormat, bootId, seqToken)
+	_, err = fmt.Fprintf(s.file, stateFormat, streamName, bootId, seqToken)
 	if err != nil {
 		return err
 	}
