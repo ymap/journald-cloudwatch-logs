@@ -126,6 +126,9 @@ func BatchRecords(records <-chan Record, batches chan<- []Record, batchSize int)
 		// Switch buffers before we start building the next batch.
 		currentBuf = (currentBuf + 1) % 2
 		next = 0
+
+		// Make sure we do not violate the AWS limit of 5 submissions/second
+		time.Sleep(250 * time.Millisecond)
 	}
 }
 
